@@ -6,4 +6,4 @@
  
 Image of optimal paths that connect offices (blue) with customers(yellow) for lowest costs:
 
-![Image of optimal paths](https://imgur.com/OjtnNJi)
+![Image of optimal paths](https://i.imgur.com/OjtnNJi.png)
