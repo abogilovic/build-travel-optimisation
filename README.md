@@ -4,3 +4,6 @@
 - Combinatorics for less combinations <0% error>
 - Heuristic approach for some <x% error> boundary <incoming>
  
+Image of optimal paths that connect offices (blue) with customers(yellow) for lowest costs:
+
+![Image of optimal paths](https://imgur.com/OjtnNJi)
