@@ -1,5 +1,5 @@
 # build-travel-optimisation
 
 - Pathfinding using flood-fill algorithm
-- Combinatorics for smaller problem for 0% error
-- Heuristic for some x% error boundary <incoming>
+- Combinatorics for less combinations <0% error>
+- Heuristic approach for some <x% error> boundary <incoming>
