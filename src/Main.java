@@ -3,7 +3,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         Content content = new Content();
-        content.readFile("src/inputs/test_map.txt");
+        content.readFile("src/inputs/sarajevo.txt");
 
         content.floodFillCustomerHeadquarters();
         List<ReplyOffice> allReplyOffices = content.allReplyOffices();

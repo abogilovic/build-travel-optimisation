@@ -17,13 +17,24 @@ public class Content {
 
     private Map<Character, Integer> tileCosts = new HashMap<>() {{
         put('#', -1);
-        put('~', 800);
-        put('*', 200);
-        put('+', 150);
-        put('X', 120);
-        put('_', 100);
-        put('H', 70);
-        put('T', 50);
+        put('~', 800);   //water
+        put('*', 200);  //traffic jam
+        put('+', 150);  //dirt
+        put('X', 120);  //railway level crossing
+        put('_', 100);  //standard terrain
+        put('H', 70);   //highway
+        put('T', 50);    //railway
+    }};
+
+    private Map<Integer, Color> tileColors = new HashMap<>() {{
+        put(-1, new Color(0, 0, 0));              //not walkable
+        put(800, new Color(103, 187, 224));     //water
+        put(200, new Color(123, 124, 133));     //traffic jam
+        put(150, new Color(156, 116, 75));      //dirt
+        put(120, new Color(156, 36, 36));       //railway level crossing
+        put(100, new Color(152, 188, 54));      //standard terrain
+        put(70, new Color(136, 129, 122));      //highway
+        put(50, new Color(230, 63, 52));        //railway
     }};
 
     //Algorithm
@@ -208,7 +219,8 @@ public class Content {
         for (CustomerHeadquarter ch : customerHeadquarters)
             createCHFloodImage(ch);
         createWeightMapImage();
-        createOverallImage(customerHeadquarters, replyOffices);
+        createGlobalFloodMapImage(customerHeadquarters, replyOffices);
+        createRealisticGlobalMapImage(customerHeadquarters, replyOffices);
     }
 
     //Done
@@ -262,8 +274,50 @@ public class Content {
         }
     }
 
-    //Modify
-    private void createOverallImage(List<CustomerHeadquarter> customerHeadquarters, List<ReplyOffice> replyOffices) {
+    private void createRealisticGlobalMapImage(List<CustomerHeadquarter> customerHeadquarters, List<ReplyOffice> replyOffices) {
+        List<Path> paths = new ArrayList<>();
+        replyOffices.forEach(replyOffice -> paths.addAll(replyOffice.paths));
+
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for (int i = 0; i < mapTiles.size(); i++)
+            for (int j = 0; j < mapTiles.get(i).size(); j++) {
+                boolean isSpecial = false;
+                for (CustomerHeadquarter ch : customerHeadquarters)
+                    if (i == ch.tileAt.y && j == ch.tileAt.x) {
+                        img.setRGB(j, i, new Color(255, 255, 0).getRGB());
+                        isSpecial = true;
+                        break;
+                    }
+                if (!isSpecial)
+                    for (ReplyOffice ro : replyOffices)
+                        if (i == ro.tileAt.y && j == ro.tileAt.x) {
+                            img.setRGB(j, i, new Color(0, 100, 255).getRGB());
+                            isSpecial = true;
+                            break;
+                        }
+                if (!isSpecial) img.setRGB(j, i, tileColors.get(mapTiles.get(i).get(j).cost).getRGB());
+                label:
+                if (!isSpecial)
+                    for (Path path : paths)
+                        for (Tile tile : path.tiles)
+                            if (i == tile.y && j == tile.x) {
+                                img.setRGB(j, i, new Color(img.getRGB(j, i)).brighter().brighter().getRGB());
+                                //img.setRGB(j, i, new Color(34, 151, 250).getRGB());
+                                break label;
+                            }
+            }
+
+        try {
+            File f = new File("src/imgs/RealisticGlobalMap.png");
+            ImageIO.write(img, "PNG", f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Done
+    private void createGlobalFloodMapImage(List<CustomerHeadquarter> customerHeadquarters, List<ReplyOffice> replyOffices) {
         List<Path> paths = new ArrayList<>();
         replyOffices.forEach(replyOffice -> paths.addAll(replyOffice.paths));
 
@@ -309,7 +363,7 @@ public class Content {
             }
 
         try {
-            File f = new File("src/imgs/overallFlood.png");
+            File f = new File("src/imgs/GlobalFloodMap.png");
             ImageIO.write(img, "PNG", f);
         } catch (IOException e) {
             e.printStackTrace();
